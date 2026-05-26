@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rithik Yanna — Full-Stack Java Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #f7f9ff;
+      --bg-alt:    #eef1fb;
+      --surface:   #ffffff;
+      --text:      #18243e;
+      --muted:     #5a6a8a;
+      --border:    #dde4f2;
+      --accent:    #7c3aed;
+      --accent-lt: #ede9fe;
+      --accent-dk: #6d28d9;
+      --ff-serif:  'Lora', Georgia, serif;
+      --ff-sans:   'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    [data-dark="true"] {
+      --bg:        #0f1624;
+      --bg-alt:    #151f35;
+      --surface:   #1c2840;
+      --text:      #e8edf8;
+      --muted:     #8899bb;
+      --border:    #263352;
+      --accent-lt: #2e1f5e;
+      --accent-dk: #a78bfa;
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--ff-sans); line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
+    }
+    ::selection { background: var(--accent-lt); color: var(--accent); }
+    a { color: inherit; }
+    input, textarea, button { font-family: var(--ff-sans); }
+    input:focus, textarea:focus { outline: none; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim-ready { opacity: 0; }
+    .anim-in    { animation: fadeUp 0.65s ease both; }
+    .dot-grid {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+      background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 70% 80% at 80% 40%, black 20%, transparent 80%);
+      opacity: 0.55;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── DATA ── */
+const SKILLS = {
+  "Backend":        ["Java 8+","Spring Boot","Spring MVC","Spring Security","Spring Data JPA","Hibernate","REST APIs","Microservices","JWT","Maven","Gradle"],
+  "Frontend":       ["React","Angular","TypeScript","JavaScript","HTML5","CSS3","RxJS","Redux","Bootstrap","Ext JS","Material Design"],
+  "Databases":      ["MySQL","PostgreSQL","Oracle","MongoDB","SQL Server","JPA / Hibernate ORM","Schema Design","Query Optimization"],
+  "Cloud & DevOps": ["AWS (EC2, S3)","Docker","Jenkins","CI/CD","GitHub Actions","Bitbucket","Git"],
+  "Testing":        ["JUnit","Mockito","Jasmine","Postman","TDD","Integration Testing","Code Reviews"],
+  "AI & Tools":     ["Claude AI","GitHub Copilot","JIRA","IntelliJ IDEA","VS Code","Agile / Scrum","Design Patterns","OOP"]
+};
+
+const EXPERIENCE = [
+  {
+    role:    "Full Stack Engineer",
+    company: "True Cloud Technologies",
+    badge:   "Client: T-Mobile",
+    period:  "Mar 2025 – May 2026",
+    bullets: [
+      "Built and maintained REST APIs, microservices, and full-stack features using Java, Spring Boot, and React in a production enterprise environment at T-Mobile.",
+      "Integrated Spring Security with JWT — enabling secure login and fine-grained role-based authorization across services.",
+      "Developed React components and Redux state management, connecting the frontend cleanly to secured backend APIs.",
+      "Maintained rigorous JUnit & Mockito test coverage; actively participated in code reviews and contributed to internal wikis.",
+      "Used AI tools (Claude, GitHub Copilot) daily as thinking partners — not crutches — to write better code faster.",
+      "Resolved production defects by analyzing logs and implementing targeted fixes under real-world time pressure.",
+    ]
+  },
+  {
+    role:    "Software Engineer",
+    company: "Tek Prism",
+    badge:   "Application & Product Analytics",
+    period:  "Aug 2024 – Feb 2025",
+    bullets: [
+      "Developed backend modules with Java, Spring Boot, Spring Data JPA, and Hibernate.",
+      "Built RESTful APIs using DTO patterns; implemented JWT and Spring Security for endpoint protection.",
+      "Integrated backend with Angular frontend using HttpClient and RxJS reactive patterns.",
+      "Managed MySQL schema design, entity relationships; supported defect resolution via JIRA and Git.",
+    ]
+  },
+  {
+    role:    "Software Developer",
+    company: "Visionyle Solutions",
+    badge:   "Backend Systems – Spring Boot",
+    period:  "Dec 2020 – May 2022",
+    bullets: [
+      "Supported Spring Boot backend services for CRM and loyalty applications.",
+      "Designed and optimized SQL queries used in backend data retrieval and reporting pipelines.",
+      "Validated REST API data consistency between backend services and relational databases.",
+      "Translated business reporting requirements into backend-focused technical specs with cross-functional teams.",
+    ]
+  }
+];
+
+const TOOLS = [
+  { name:"Java",       icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" },
+  { name:"Spring",     icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" },
+  { name:"React",      icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name:"Angular",    icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg" },
+  { name:"TypeScript", icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name:"JavaScript", icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
+  { name:"MySQL",      icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
+  { name:"PostgreSQL", icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name:"MongoDB",    icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+  { name:"Docker",     icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
+  { name:"AWS",        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg" },
+  { name:"Git",        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+  { name:"GitHub",     icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+  { name:"Jenkins",    icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg" },
+  { name:"Python",     icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
+  { name:"IntelliJ",   icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/intellij/intellij-original.svg" },
+  { name:"VS Code",    icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" },
+  { name:"HTML5",      icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+  { name:"CSS3",       icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+  { name:"Bootstrap",  icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" },
+  { name:"JIRA",       icon:"https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg" },
+];
+
+const PAD = 'clamp(20px, 7vw, 96px)';
+const labelSty = { fontSize:11, fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'var(--accent)', marginBottom:14 };
+const h2Sty    = { fontFamily:'var(--ff-serif)', fontSize:'clamp(28px,5vw,46px)', fontWeight:600, letterSpacing:-0.5, marginBottom:14 };
+const mutedSty = { color:'var(--muted)', fontSize:17, lineHeight:1.8 };
+
+/* ── useInView ── */
+function useInView(threshold = 0.12) {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVis(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, vis];
+}
+
+function FadeIn({ children, delay = 0, style = {} }) {
+  const [ref, vis] = useInView();
+  return (
+    <div ref={ref} className={vis ? 'anim-in' : 'anim-ready'} style={{ animationDelay:`${delay}ms`, ...style }}>
+      {children}
+    </div>
+  );
+}
+
+/* ── NAV ── */
+function Nav({ dark, setDark }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', fn, { passive:true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+  const links = ['About','Skills','Experience','Tools','Contact'];
+  return (
+    <nav style={{
+      position:'fixed', top:0, left:0, right:0, zIndex:200,
+      height:60, padding:`0 ${PAD}`,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      background: scrolled ? 'color-mix(in srgb, var(--bg) 88%, transparent)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(16px)' : 'none',
+      borderBottom: scrolled ? '1px solid var(--border)' : 'none',
+      transition:'all 0.3s ease'
+    }}>
+      <span style={{ fontFamily:'var(--ff-serif)', fontWeight:600, fontSize:18 }}>RY</span>
+      <div style={{ display:'flex', gap:28, alignItems:'center' }}>
+        {links.map(l => (
+          <a key={l} href={`#${l.toLowerCase()}`} style={{ textDecoration:'none', fontSize:13.5, fontWeight:500, color:'var(--muted)', transition:'color 0.15s' }}
+            onMouseEnter={e => e.target.style.color='var(--accent)'}
+            onMouseLeave={e => e.target.style.color='var(--muted)'}>{l}</a>
+        ))}
+        <button onClick={() => setDark(d => !d)} title="Toggle dark mode" style={{
+          width:36, height:36, borderRadius:'50%', border:'1.5px solid var(--border)',
+          background:'var(--surface)', cursor:'pointer', fontSize:17,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          transition:'all 0.2s', color:'var(--muted)'
+        }}
+        onMouseEnter={e => e.currentTarget.style.borderColor='var(--accent)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}
+        >{dark ? '☀' : '◑'}</button>
+      </div>
+    </nav>
+  );
+}
+
+/* ── HERO ── */
+function Hero() {
+  return (
+    <section id="about" style={{
+      minHeight:'100vh', position:'relative', overflow:'hidden',
+      padding:`clamp(110px,15vh,170px) ${PAD} 80px`,
+      display:'flex', flexDirection:'column', justifyContent:'center'
+    }}>
+      <div className="dot-grid" />
+      <div style={{
+        position:'absolute', right:'clamp(40px,12vw,180px)', top:'42%',
+        transform:'translateY(-50%)',
+        width:'clamp(200px,28vw,380px)', height:'clamp(200px,28vw,380px)',
+        borderRadius:'50%',
+        background:'radial-gradient(circle, var(--accent-lt) 0%, transparent 68%)',
+        opacity:0.55, pointerEvents:'none'
+      }} />
+      <div style={{ maxWidth:680, animation:'fadeUp 0.85s 0.05s ease both' }}>
+        <p style={{ fontSize:13.5, color:'var(--accent)', fontWeight:600, letterSpacing:2, textTransform:'uppercase', marginBottom:22 }}>
+          Full-Stack Java Developer
+        </p>
+        <h1 style={{ fontFamily:'var(--ff-serif)', fontSize:'clamp(44px,8vw,88px)', fontWeight:600, lineHeight:1.05, letterSpacing:-2, marginBottom:28 }}>
+          Rithik<br />
+          <em style={{ fontStyle:'italic', fontWeight:400 }}>Yanna</em>
+        </h1>
+        <p style={{ fontSize:'clamp(15px,1.8vw,18px)', color:'var(--muted)', lineHeight:1.85, maxWidth:520, marginBottom:20 }}>
+          3+ years building production-grade applications with Java, Spring Boot, Angular, and React.
+          I care about clean code, thorough tests, and shipping things that actually work.
+        </p>
+        <p style={{ fontSize:14, color:'var(--muted)', marginBottom:44, display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ display:'inline-block', width:7, height:7, borderRadius:'50%', background:'#22c55e', boxShadow:'0 0 0 3px rgba(34,197,94,0.2)' }}></span>
+          Open to opportunities · Indianapolis, IN · W2 &amp; C2C · F-1 STEM OPT — seeking H-1B sponsorship
+        </p>
+        <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
+          <a href="#contact" style={{
+            padding:'13px 28px', background:'var(--accent)', color:'#fff',
+            borderRadius:9, textDecoration:'none', fontWeight:600, fontSize:14.5,
+            boxShadow:'0 4px 18px color-mix(in srgb, var(--accent) 38%, transparent)',
+            transition:'all 0.22s'
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 26px color-mix(in srgb, var(--accent) 46%, transparent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 18px color-mix(in srgb, var(--accent) 38%, transparent)'; }}
+          >Get in touch →</a>
+          <a href="#experience" style={{
+            padding:'13px 28px', border:'1.5px solid var(--border)',
+            color:'var(--text)', borderRadius:9, textDecoration:'none',
+            fontWeight:500, fontSize:14.5, transition:'all 0.22s'
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.color='var(--accent)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.color='var(--text)'; }}
+          >View experience</a>
+        </div>
+      </div>
+      <div style={{
+        position:'absolute', bottom:40, left:PAD,
+        display:'flex', alignItems:'center', gap:10,
+        color:'var(--muted)', fontSize:11.5, letterSpacing:1.5, textTransform:'uppercase'
+      }}>
+        <div style={{ width:36, height:1, background:'var(--border)' }} />
+        Scroll
+      </div>
+    </section>
+  );
+}
+
+/* ── SKILLS ── */
+function Skills() {
+  const cats = Object.entries(SKILLS);
+  return (
+    <section id="skills" style={{ background:'var(--bg-alt)', padding:`clamp(64px,10vw,120px) ${PAD}` }}>
+      <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <FadeIn>
+          <p style={labelSty}>Skills</p>
+          <h2 style={h2Sty}>What I work with</h2>
+          <p style={{ ...mutedSty, maxWidth:440, marginBottom:52, fontSize:16 }}>
+            A full-stack toolkit shaped by real production work — not tutorials.
+          </p>
+        </FadeIn>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(290px,1fr))', gap:18 }}>
+          {cats.map(([cat, items], i) => (
+            <FadeIn key={cat} delay={i * 55}>
+              <div style={{
+                background:'var(--surface)', border:'1px solid var(--border)', borderRadius:14,
+                padding:'24px 26px', height:'100%',
+                transition:'box-shadow 0.22s, transform 0.22s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow='0 6px 28px color-mix(in srgb, var(--accent) 10%, transparent)'; e.currentTarget.style.transform='translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow=''; e.currentTarget.style.transform=''; }}
+              >
+                <p style={{ fontSize:11, fontWeight:700, letterSpacing:1.5, textTransform:'uppercase', color:'var(--accent)', marginBottom:14 }}>{cat}</p>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:7 }}>
+                  {items.map(s => (
+                    <span key={s} style={{
+                      fontSize:12.5, padding:'4px 10px', borderRadius:5,
+                      background:'var(--bg)', color:'var(--text)', fontWeight:500
+                    }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── EXPERIENCE ── */
+function Experience() {
+  const [active, setActive] = useState(0);
+  const exp = EXPERIENCE[active];
+  return (
+    <section id="experience" style={{ padding:`clamp(64px,10vw,120px) ${PAD}` }}>
+      <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <FadeIn>
+          <p style={labelSty}>Experience</p>
+          <h2 style={h2Sty}>Where I've worked</h2>
+        </FadeIn>
+        <FadeIn delay={80}>
+          <div style={{ display:'grid', gridTemplateColumns:'210px 1fr', gap:52, marginTop:52, alignItems:'start' }}>
+            <div style={{ borderLeft:'2px solid var(--border)' }}>
+              {EXPERIENCE.map((e, i) => (
+                <button key={i} onClick={() => setActive(i)} style={{
+                  display:'block', width:'100%', textAlign:'left',
+                  padding:'11px 20px', background:'none', border:'none',
+                  borderLeft:`2px solid ${active===i ? 'var(--accent)' : 'transparent'}`,
+                  marginLeft:-2, cursor:'pointer', transition:'all 0.18s',
+                  color: active===i ? 'var(--accent)' : 'var(--muted)',
+                  fontWeight: active===i ? 600 : 400, fontSize:13.5,
+                  fontFamily:'var(--ff-sans)'
+                }}>{e.company}</button>
+              ))}
+            </div>
+            <div key={active} style={{ animation:'fadeUp 0.4s ease both' }}>
+              <h3 style={{ fontSize:18.5, fontWeight:600, marginBottom:6 }}>{exp.role}</h3>
+              {exp.badge && <p style={{ fontSize:13, color:'var(--accent)', fontWeight:600, marginBottom:4 }}>{exp.badge}</p>}
+              <p style={{ fontSize:13, color:'var(--muted)', marginBottom:28 }}>{exp.period}</p>
+              <ul style={{ listStyle:'none', display:'flex', flexDirection:'column', gap:13 }}>
+                {exp.bullets.map((b, i) => (
+                  <li key={i} style={{ display:'flex', gap:12, fontSize:14.5, lineHeight:1.75, color:'var(--text)' }}>
+                    <span style={{ color:'var(--accent)', flexShrink:0, marginTop:5, fontSize:9 }}>▸</span>
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ── EDUCATION ── */
+function Education() {
+  return (
+    <section style={{ background:'var(--bg-alt)', padding:`clamp(56px,8vw,96px) ${PAD}` }}>
+      <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <FadeIn>
+          <p style={labelSty}>Education</p>
+          <h2 style={h2Sty}>Academic background</h2>
+        </FadeIn>
+        <FadeIn delay={70}>
+          <div style={{
+            display:'flex', justifyContent:'space-between', alignItems:'center',
+            flexWrap:'wrap', gap:12, marginTop:40,
+            padding:'22px 28px', background:'var(--surface)',
+            border:'1px solid var(--border)', borderRadius:12
+          }}>
+            <div>
+              <p style={{ fontWeight:600, fontSize:15.5, marginBottom:3 }}>Master of Science — Information Technology</p>
+              <p style={{ color:'var(--muted)', fontSize:13.5 }}>Valparaiso University · Valparaiso, IN</p>
+            </div>
+            <span style={{ color:'var(--accent)', fontSize:13, fontWeight:600 }}>May 2024</span>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ── TOOLS ── */
+function Tools() {
+  return (
+    <section id="tools" style={{ padding:`clamp(64px,10vw,120px) ${PAD}` }}>
+      <div style={{ maxWidth:1100, margin:'0 auto' }}>
+        <FadeIn>
+          <p style={labelSty}>Stack</p>
+          <h2 style={h2Sty}>Tech I use</h2>
+          <p style={{ ...mutedSty, maxWidth:400, marginBottom:52, fontSize:16 }}>
+            Tools and technologies from real day-to-day work.
+          </p>
+        </FadeIn>
+        <FadeIn delay={80}>
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:'repeat(auto-fill, minmax(90px,1fr))',
+            gap:'1px',
+            background:'var(--border)',
+            border:'1px solid var(--border)',
+            borderRadius:14,
+            overflow:'hidden'
+          }}>
+            {TOOLS.map((t, i) => (
+              <div key={i} style={{
+                background:'var(--surface)',
+                padding:'20px 12px',
+                display:'flex', flexDirection:'column', alignItems:'center', gap:10,
+                transition:'background 0.18s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background='var(--bg-alt)'}
+              onMouseLeave={e => e.currentTarget.style.background='var(--surface)'}
+              >
+                <img src={t.icon} alt={t.name} style={{ width:32, height:32, objectFit:'contain' }} />
+                <span style={{ fontSize:11, color:'var(--muted)', fontWeight:500, textAlign:'center' }}>{t.name}</span>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ── CONTACT ── */
+function Contact() {
+  const [form, setForm] = useState({ name:'', email:'', message:'' });
+  const [sent, setSent] = useState(false);
+  const inp = {
+    width:'100%', padding:'13px 16px',
+    border:'1.5px solid var(--border)', borderRadius:9,
+    fontSize:14.5, background:'var(--surface)', color:'var(--text)',
+    transition:'border-color 0.18s'
+  };
+  return (
+    <section id="contact" style={{ background:'var(--bg-alt)', padding:`clamp(64px,10vw,120px) ${PAD}` }}>
+      <div style={{ maxWidth:680, margin:'0 auto' }}>
+        <FadeIn>
+          <p style={labelSty}>Contact</p>
+          <h2 style={h2Sty}>Let's talk</h2>
+          <p style={{ ...mutedSty, maxWidth:480, marginBottom:48, fontSize:16 }}>
+            Open to W2, C2C, contract-to-hire, and full-time Java full-stack roles. Currently on F-1 STEM OPT and actively seeking H-1B sponsorship for permanent positions. Available immediately — drop a line.
+          </p>
+        </FadeIn>
+        <FadeIn delay={80}>
+          {sent ? (
+            <div style={{ padding:'52px 40px', textAlign:'center', background:'var(--accent-lt)', borderRadius:16, border:'1px solid color-mix(in srgb, var(--accent) 25%, transparent)' }}>
+              <p style={{ fontFamily:'var(--ff-serif)', fontSize:26, color:'var(--accent)', marginBottom:8 }}>Message sent.</p>
+              <p style={{ color:'var(--muted)', fontSize:15 }}>I'll get back to you soon — usually within a day.</p>
+            </div>
+          ) : (
+            <form onSubmit={e => { e.preventDefault(); setSent(true); }} style={{ display:'flex', flexDirection:'column', gap:14 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+                <input type="text" placeholder="Your name" required value={form.name} onChange={e => setForm({...form, name:e.target.value})} style={inp}
+                  onFocus={e => e.target.style.borderColor='var(--accent)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
+                <input type="email" placeholder="Email address" required value={form.email} onChange={e => setForm({...form, email:e.target.value})} style={inp}
+                  onFocus={e => e.target.style.borderColor='var(--accent)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
+              </div>
+              <textarea placeholder="What are you working on?" required rows={5} value={form.message} onChange={e => setForm({...form, message:e.target.value})}
+                style={{...inp, resize:'vertical'}}
+                onFocus={e => e.target.style.borderColor='var(--accent)'} onBlur={e => e.target.style.borderColor='var(--border)'} />
+              <button type="submit" style={{
+                alignSelf:'flex-start', padding:'13px 30px',
+                background:'var(--accent)', color:'#fff', border:'none', borderRadius:9,
+                fontWeight:600, fontSize:14.5, cursor:'pointer',
+                boxShadow:'0 4px 18px color-mix(in srgb, var(--accent) 30%, transparent)',
+                transition:'all 0.22s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
+              onMouseLeave={e => e.currentTarget.style.transform=''}
+              >Send message →</button>
+            </form>
+          )}
+        </FadeIn>
+        <FadeIn delay={160}>
+          <div style={{ marginTop:60, paddingTop:40, borderTop:'1px solid var(--border)', display:'flex', flexWrap:'wrap', gap:'28px 48px' }}>
+            {[
+              { label:'Email',    display:'Rithikreddy0210@gmail.com',                      href:'mailto:Rithikreddy0210@gmail.com' },
+              { label:'Phone',    display:'417-444-2948',                                    href:'tel:4174442948' },
+              { label:'LinkedIn', display:'linkedin.com/in/rithik-yanna-6b1b1a24b',         href:'https://www.linkedin.com/in/rithik-yanna-6b1b1a24b/' },
+              { label:'GitHub',   display:'github.com/rithikyanna',                          href:'https://github.com/rithikyanna' },
+            ].map(l => (
+              <div key={l.label}>
+                <p style={{ fontSize:11, fontWeight:700, letterSpacing:1.5, textTransform:'uppercase', color:'var(--muted)', marginBottom:6 }}>{l.label}</p>
+                <a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined}
+                  style={{ fontSize:13.5, color:'var(--accent)', textDecoration:'none', fontWeight:500, transition:'opacity 0.15s' }}
+                  onMouseEnter={e => e.target.style.opacity='0.65'}
+                  onMouseLeave={e => e.target.style.opacity='1'}
+                >{l.display}</a>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ── FOOTER ── */
+function Footer() {
+  return (
+    <footer style={{
+      borderTop:'1px solid var(--border)', padding:`26px ${PAD}`,
+      display:'flex', justifyContent:'space-between', alignItems:'center',
+      flexWrap:'wrap', gap:8, color:'var(--muted)', fontSize:13
+    }}>
+      <span style={{ fontFamily:'var(--ff-serif)', fontWeight:600, color:'var(--text)', fontSize:15 }}>Rithik Yanna</span>
+      <span>Full-Stack Java Developer · © 2026</span>
+    </footer>
+  );
+}
+
+/* ── APP ── */
+function App() {
+  const [dark, setDark] = useState(false);
+  const [accent, setAccent] = useState('#7c3aed');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-dark', String(dark));
+  }, [dark]);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', accent);
+    document.documentElement.style.setProperty('--accent-lt', dark ? '#2e1f5e' : accent + '22');
+  }, [accent, dark]);
+
+  return (
+    <>
+      <Nav dark={dark} setDark={setDark} />
+      <main>
+        <Hero />
+        <Skills />
+        <Experience />
+        <Education />
+        <Tools />
+        <Contact />
+      </main>
+      <Footer />
+
+      {/* Accent picker */}
+      <div style={{
+        position:'fixed', bottom:24, right:24, zIndex:300,
+        background:'var(--surface)', border:'1px solid var(--border)',
+        borderRadius:12, padding:'10px 14px',
+        display:'flex', alignItems:'center', gap:10, boxShadow:'0 4px 20px rgba(0,0,0,0.12)'
+      }}>
+        <span style={{ fontSize:11, color:'var(--muted)', fontWeight:600, letterSpacing:1, textTransform:'uppercase' }}>Accent</span>
+        {['#7c3aed','#2563eb','#0891b2','#059669','#dc2626','#ea580c'].map(c => (
+          <button key={c} onClick={() => setAccent(c)} title={c} style={{
+            width:20, height:20, borderRadius:'50%', background:c, border:'none',
+            cursor:'pointer', outline: accent===c ? `2px solid ${c}` : 'none',
+            outlineOffset:2, transition:'transform 0.15s',
+            transform: accent===c ? 'scale(1.2)' : 'scale(1)'
+          }} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
